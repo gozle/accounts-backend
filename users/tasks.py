@@ -17,7 +17,7 @@ def send_sms(phone_number, message):
         text=message,
         dest=phone_number
     )
-    logger.info(f'[send_sms] {sms.dest} {sms.text}')
     response = sms.send()
-    data = {'status_code': response.get('status_code'), 'message': response.get('content')}
+    data = {'status_code': response.get('status_code'), 'message': response.get('content'), 'text': sms.text,
+            'phone_number': phone_number}
     return data

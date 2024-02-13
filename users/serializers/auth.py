@@ -26,21 +26,31 @@ class VerificationSerializer(serializers.Serializer):
         method = attrs.get('method')
         token = attrs.get('token')
         code = attrs.get('code')
+        email = attrs.get('email')
+        phone_number = attrs.get('phone_number')
 
         if token:
             payload = parse_verification_token(token)
             if not payload:
-                raise serializers.ValidationError(_('Token is invalid or expired'))
+                raise serializers.ValidationError({'token': _('Token is invalid or expired')})
             method = payload.get('method')
             user_identifier = payload.get('user_identifier')
 
             verification_code = cache.get(f'verification_code:{user_identifier}')
             if not verification_code:
-                raise serializers.ValidationError(_('Verification code is invalid or expired'))
+                raise serializers.ValidationError({'code': _('Verification code is invalid or expired')})
             if int(verification_code) != int(code):
-                raise serializers.ValidationError(_('Invalid verification code'))
+                raise serializers.ValidationError({'code': _('Invalid verification code')})
+
+            return super().validate(attrs)
 
         if method not in ['email', 'phone_number']:
-            raise serializers.ValidationError(_('Invalid verification method'))
+            raise serializers.ValidationError({'method': _('Invalid verification method')})
+
+        if method == 'email' and not email:
+            raise serializers.ValidationError({'email': _('Email is required')})
+
+        if method == 'phone_number' and not phone_number:
+            raise serializers.ValidationError({'phone_number': _('Phone number is required')})
 
         return super().validate(attrs)
