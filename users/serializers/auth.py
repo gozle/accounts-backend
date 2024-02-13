@@ -1,32 +1,46 @@
 from django.core.cache import cache
+from django.core.validators import MinValueValidator, MaxValueValidator
+from django.utils.translation import gettext_lazy as _
+
 from rest_framework import serializers
+from phonenumber_field import serializerfields
 
-
-class UserSerializer(serializers.Serializer):
-    id = serializers.UUIDField(required=True)
-    username = serializers.CharField(max_length=30, required=True)
-    phone_number = None  # TODO
-    balance = serializers.FloatField(default=0)
-    created_at = serializers.DateTimeField()
-    updated_at = serializers.DateTimeField()
+from users.utils.auth import parse_verification_token
+from users.utils.sms import MAX_VALUE, MIN_VALUE
 
 
 class VerificationSerializer(serializers.Serializer):
-    phone_number = serializerfields.PhoneNumberField()
+    method = serializers.ChoiceField(choices=[('email', 'Email'), ('phone_number', 'Phone number')], required=False)
+    email = serializers.EmailField(required=False)
+    phone_number = serializerfields.PhoneNumberField(required=False)
+    token = serializers.CharField(required=False)
     code = serializers.IntegerField(
         validators=[
             MinValueValidator(MIN_VALUE),
             MaxValueValidator(MAX_VALUE)
-        ]
+        ],
+        required=False
     )
 
     def validate(self, attrs):
-        phone_number = attrs.get('phone_number')
+        method = attrs.get('method')
+        token = attrs.get('token')
         code = attrs.get('code')
-        verification_code = cache.get(f'{phone_number}_verification_code')
-        if verification_code != code:
-            raise serializers.ValidationError(
-                {"code": _("Verification code didn't match.")},
-            )
+
+        if token:
+            payload = parse_verification_token(token)
+            if not payload:
+                raise serializers.ValidationError(_('Token is invalid or expired'))
+            method = payload.get('method')
+            user_identifier = payload.get('user_identifier')
+
+            verification_code = cache.get(f'verification_code:{user_identifier}')
+            if not verification_code:
+                raise serializers.ValidationError(_('Verification code is invalid or expired'))
+            if int(verification_code) != int(code):
+                raise serializers.ValidationError(_('Invalid verification code'))
+
+        if method not in ['email', 'phone_number']:
+            raise serializers.ValidationError(_('Invalid verification method'))
 
         return super().validate(attrs)

@@ -2,7 +2,7 @@ import os
 import datetime
 from pathlib import Path
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'secret_key')
 
@@ -11,8 +11,6 @@ INSTALLED_APPS = [
     'users',
 
     # extras
-    'jet',
-    'jet.dashboard',
     'drf_yasg',
     'rest_framework',
     'corsheaders',
@@ -31,6 +29,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django_user_agents.middleware.UserAgentMiddleware',
+
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -99,7 +98,7 @@ STATIC_ROOT = 'static/'
 OAUTH2_PROVIDER = {
     # Token expiration settings
     'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 5,  # Access token expiration time in seconds (5 min)
-    'REFRESH_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 15,  # Refresh token expiration time in seconds (30 days)
+    'REFRESH_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 15,  # Refresh token expiration time in seconds (15 days)
 
     # Allowed grant types
     'ALLOWED_GRANT_TYPES': [
@@ -111,7 +110,7 @@ OAUTH2_PROVIDER = {
 
     # Token scopes
     'SCOPES': {
-        'read': 'Read scope',
+        'profile.read': 'Read profile scope',
         'write': 'Write scope',
         'custom_scope': 'Custom scope description',
     }
@@ -119,11 +118,14 @@ OAUTH2_PROVIDER = {
 
 AUTH_USER_MODEL = "users.User"
 
+AUTHENTICATION_BACKENDS = [
+    'users.backends.auth.AuthBackend',
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [

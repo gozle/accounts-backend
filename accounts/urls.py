@@ -1,10 +1,17 @@
 import oauth2_provider.views as oauth2_views
+from django.conf.urls.static import static
+
 from django.contrib import admin
+from django.contrib.auth.views import LoginView
 from django.urls import path, include
 from django.conf import settings
-from users.views import ApiEndpoint
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
 
+from rest_framework_simplejwt.views import (
+    TokenRefreshView,
+    TokenVerifyView,
+)
+
+from users.views import CustomLogin, CustomTokenRevokeView, Verification
 
 # OAuth2 provider endpoints
 oauth2_endpoint_views = [
@@ -35,17 +42,15 @@ urlpatterns = [
     path('o/', include((oauth2_endpoint_views, 'oauth2_provider'), namespace="oauth2_provider")),
 
     # JWT Token Endpoints
-    path('auth/token', TokenObtainPairView.as_view(), name='token_jwt_obtain_pair'),
-    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_jwt_refresh'),
-    path('auth/token/verify/', TokenVerifyView.as_view(), name='token_jwt_verify'),
+    path('auth/login', CustomLogin.as_view(), name='custom-login'),
+    path('auth/verify', Verification.as_view(), name='verification'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
+    path('token/verify/', TokenVerifyView.as_view(), name='token-verify'),
+    path('token/revoke/', CustomTokenRevokeView.as_view(), name='token-revoke'),
 
     # Admin urls
-    path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
-    path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
+    # path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
+    # path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path('admin/', admin.site.urls),
 
-    # Auth
-    path('auth/login/', LoginView.as_view(), name='login'),
-    path('auth/logout/', LogoutView.as_view(), name='logout'),
-    path('api/hello', ApiEndpoint.as_view()),
 ]

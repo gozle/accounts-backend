@@ -7,7 +7,7 @@ import hashlib
 import requests
 
 
-API_URL = os.getenv('API_URL')
+API_URL = os.getenv('SMS_API_URL')
 USER = os.getenv('SMS_USER')
 SECRET = os.getenv('SMS_SECRET')
 
