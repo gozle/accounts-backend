@@ -141,3 +141,4 @@ SIMPLE_JWT = {
 }
 
 LOGIN_URL = "/auth/login/"
+VERIFICATION_CODE_TIMEOUT = 60 * 3

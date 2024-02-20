@@ -23,6 +23,7 @@ emoji = "^2.10.0"
 django-phonenumber-field = {extras = ["phonenumbers"], version = "^7.3.0"}
 pyjwt = "^2.8.0"
 celery = "^5.3.6"
+django-ipware = "^6.0.4"
 
 [tool.poetry.group.dev]
 optional = true

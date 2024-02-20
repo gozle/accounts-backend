@@ -42,8 +42,8 @@ urlpatterns = [
     path('o/', include((oauth2_endpoint_views, 'oauth2_provider'), namespace="oauth2_provider")),
 
     # JWT Token Endpoints
-    path('auth/login', CustomLogin.as_view(), name='custom-login'),
     path('auth/verify', Verification.as_view(), name='verification'),
+
     path('token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
     path('token/verify/', TokenVerifyView.as_view(), name='token-verify'),
     path('token/revoke/', CustomTokenRevokeView.as_view(), name='token-revoke'),
