@@ -10,8 +10,9 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
+from apps.users import generate_avatar
+from apps.users import CustomLogin, CustomTokenRevokeView, Verification
 
-from users.views import CustomLogin, CustomTokenRevokeView, Verification
 
 # OAuth2 provider endpoints
 oauth2_endpoint_views = [
@@ -52,5 +53,8 @@ urlpatterns = [
     # path('jet/', include('jet.urls', 'jet')),  # Django JET URLS
     # path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path('admin/', admin.site.urls),
+
+    # Users urls
+    path('users/', include('apps.users.urls')),
 
 ]

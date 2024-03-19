@@ -1,5 +1,4 @@
 import os
-import datetime
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -8,7 +7,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'secret_key')
 
 INSTALLED_APPS = [
     # my apps
-    'users',
+    'apps.users',
 
     # extras
     'drf_yasg',
@@ -78,6 +77,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
@@ -86,46 +88,12 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-MEDIA_ROOT = 'media/'
-MEDIA_URL = 'media/'
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
-STATIC_URL = 'static/'
-STATIC_ROOT = 'static/'
-
-OAUTH2_PROVIDER = {
-    # Token expiration settings
-    'ACCESS_TOKEN_EXPIRE_SECONDS': 60 * 5,  # Access token expiration time in seconds (5 min)
-    'REFRESH_TOKEN_EXPIRE_SECONDS': 60 * 60 * 24 * 15,  # Refresh token expiration time in seconds (15 days)
-
-    # Allowed grant types
-    'ALLOWED_GRANT_TYPES': [
-        'authorization_code',
-        'password',
-        'refresh_token',
-        'client_credentials',
-    ],
-
-    # Token scopes
-    'SCOPES': {
-        'profile.read': 'Read profile scope',
-        'write': 'Write scope',
-        'custom_scope': 'Custom scope description',
-    }
-}
-
-AUTH_USER_MODEL = "users.User"
+AUTH_USER_MODEL = "apps.users.User"
 
 AUTHENTICATION_BACKENDS = [
-    'users.backends.auth.AuthBackend',
+    'apps.users.backends.auth.AuthBackend',
 ]
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -133,12 +101,3 @@ REST_FRAMEWORK = {
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
     ]
 }
-
-SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=15),
-    "AUTH_HEADER_TYPES": ("Bearer",),
-}
-
-LOGIN_URL = "/auth/login/"
-VERIFICATION_CODE_TIMEOUT = 60 * 3
